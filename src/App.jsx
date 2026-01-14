@@ -8,10 +8,11 @@ import axios from 'axios';
 function App() {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
-
+const API_URL = import.meta.env.VITE_API_URL
+  console.log(API_URL)
   const fetchBooks = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/books');
+      const res = await axios.get(`${API_URL}/books`);
       setBooks(res.data);
     } catch (err) {
       console.error(err);

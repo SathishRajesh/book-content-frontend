@@ -7,6 +7,7 @@ const PageForm = ({ book }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [username, setUsername] = useState('');
+const API_URL = import.meta.env.VITE_API_URL
 
   const chapters = book.chapters || [];
 
@@ -15,7 +16,7 @@ const PageForm = ({ book }) => {
     if (!chapterId || !title || !username) return alert('Fill all required fields');
 
     try {
-      const res = await axios.post(`http://localhost:5000/pages/${chapterId}`, { title, username });
+      const res = await axios.post(`${API_URL}/pages/${chapterId}`, { title, username });
       setPageId(res.data.id);
       setTitle('');
       alert('Page added!');
@@ -29,7 +30,7 @@ const PageForm = ({ book }) => {
     if (!pageId || !content || !username) return alert('Fill all required fields');
 
     try {
-      await axios.put(`http://localhost:5000/pages/${pageId}`, { content, username });
+      await axios.put(`${API_URL}/pages/${pageId}`, { content, username });
       setContent('');
       alert('Page updated with new version!');
     } catch (err) {

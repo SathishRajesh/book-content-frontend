@@ -4,13 +4,14 @@ import axios from 'axios';
 const ChapterForm = ({ book }) => {
   const [title, setTitle] = useState('');
   const [order, setOrder] = useState('');
-
+  const API_URL = import.meta.env.VITE_API_URL
+   
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !order) return alert('Please fill all fields');
 
     try {
-      await axios.post(`http://localhost:5000/chapters/${book.id}`, { title, order: parseInt(order) });
+      await axios.post(`${API_URL}/chapters/${book.id}`, { title, order: parseInt(order) });
       setTitle('');
       setOrder('');
       alert('Chapter added successfully!');

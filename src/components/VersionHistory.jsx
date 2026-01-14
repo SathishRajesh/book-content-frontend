@@ -3,10 +3,11 @@ import axios from 'axios';
 
 const VersionHistory = ({ page }) => {
   const [versions, setVersions] = useState([]);
+const API_URL = import.meta.env.VITE_API_URL
 
   const fetchVersions = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/pages/${page.id}/versions`);
+      const res = await axios.get(`${API_URL}/pages/${page.id}/versions`);
       setVersions(res.data);
     } catch (err) {
         console.log(err)
@@ -21,7 +22,7 @@ const VersionHistory = ({ page }) => {
 
   const handleRestore = async (versionNumber) => {
     try {
-      await axios.post(`http://localhost:5000/pages/${page.id}/restore`, {
+      await axios.post(`${API_URL}/pages/${page.id}/restore`, {
         versionNumber,
       });
       alert(`Restored version ${versionNumber}`);

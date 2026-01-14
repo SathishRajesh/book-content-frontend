@@ -6,13 +6,15 @@ const BookForm = ({ fetchBooks }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [numPages, setNumPages] = useState(0);
+  const API_URL = import.meta.env.VITE_API_URL
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username || !title || !description) return alert('Please fill all required fields');
 
     try {
-      await axios.post('http://localhost:5000/books', { title, description, numPages, username });
+      await axios.post(`${API_URL}/books`, { title, description, numPages, username });
       setUsername('');
       setTitle('');
       setDescription('');
