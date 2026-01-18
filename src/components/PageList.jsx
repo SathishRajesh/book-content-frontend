@@ -1,29 +1,47 @@
-import React, { useState } from 'react';
-import VersionHistory from './VersionHistory';
+import axios from 'axios';
+import VersionList from './VersionList'
 
-const PageList = ({ book }) => {
-  const [selectedPage, setSelectedPage] = useState(null);
 
-  const pages = [];
-  if (book.pages) pages.push(...book.pages);
-  book.chapters.forEach(c => {
-    if (c.pages) pages.push(...c.pages);
-  });
+export default function PageList({ chapter, refresh }) {
+  if (!chapter) return null;
 
+  const restore = async (index) => {
+    await axios.post(
+      `http://localhost:5000/pages/${chapter.id}/restore/${index}`
+    );
+    refresh();
+  };
+console.log(chapter)
   return (
-    <div style={{ marginTop: '20px' }}>
-      <h3>Pages</h3>
-      <ul>
-        {pages.map(p => (
-          <li key={p.id}>
-            <strong>{p.title}</strong>
-            <button onClick={() => setSelectedPage(p)} style={{ marginLeft: '10px' }}>View Versions</button>
-          </li>
-        ))}
-      </ul>
-      {selectedPage && <VersionHistory page={selectedPage} />}
-    </div>
-  );
-};
+    <>
+      <h4>Pages</h4>
 
-export default PageList;
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+             <th>Username</th>
+            <th>Restore</th>
+          </tr>
+        </thead>
+        <tbody>
+          {chapter?.pages?.map((p, i) => (
+            <tr key={p?.id}>
+              <td>{i + 1}</td>
+              <td>{p?.title}</td>
+              <td>{p?.username}</td>
+              <td>
+                {i < chapter?.pages?.length - 1 && (
+                  <button onClick={() => restore(i)}>Restore</button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <VersionList chapter={chapter} />
+    </>
+  );
+}

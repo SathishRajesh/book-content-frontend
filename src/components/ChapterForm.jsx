@@ -1,36 +1,90 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import PageForm from './PageForm';
+import PageList from './PageList';
 
-const ChapterForm = ({ book }) => {
-  const [title, setTitle] = useState('');
-  const [order, setOrder] = useState('');
-  const API_URL = import.meta.env.VITE_API_URL
-   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !order) return alert('Please fill all fields');
+const  ChapterForm=({ books, refresh })=>{
+  const [selectedBookId, setSelectedBookId] = useState('');
+  const [chapterTitle, setChapterTitle] = useState('');
+  const [selectedChapterId, setSelectedChapterId] = useState('');
 
-    try {
-      await axios.post(`${API_URL}/chapters/${book.id}`, { title, order: parseInt(order) });
-      setTitle('');
-      setOrder('');
-      alert('Chapter added successfully!');
-    } catch (err) {
-      console.error(err);
+  const selectedBook = books.find(b => b.id === selectedBookId);
+  const selectedChapter = selectedBook?.chapters?.find(
+    ch => ch.id === selectedChapterId
+  );
+
+  const createChapter = async () => {
+    if (!selectedBookId || !chapterTitle) {
+      return alert('Select book and enter chapter name');
     }
-  };
 
-  const inputStyle = { marginRight: '10px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' };
-  const buttonStyle = { padding: '6px 12px', backgroundColor: '#2980b9', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' };
+    const res = await axios.post(
+      `http://localhost:5000/chapters/${selectedBookId}`,
+      { title: chapterTitle }
+    );
+
+    refresh();
+
+    const newChapter = res?.data?.chapters?.at(-1);
+    setSelectedChapterId(newChapter?.id);
+    setChapterTitle('');
+  };    
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-      <h3 style={{ color: '#34495e' }}>Add Chapter to "{book.title}"</h3>
-      <input type="text" placeholder="Chapter Title" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} required />
-      <input type="number" placeholder="Order" value={order} onChange={(e) => setOrder(e.target.value)} style={inputStyle} required />
-      <button type="submit" style={buttonStyle}>Add Chapter</button>
-    </form>
-  );
-};
+    <>
+      <h3  style={{display:"flex"}}>Create Chapter</h3>
 
-export default ChapterForm;
+      <select
+        value={selectedBookId}
+        onChange={e => {
+          setSelectedBookId(e?.target?.value);
+          setSelectedChapterId('');
+        }}
+      >
+        <option value="">Select Book</option>
+        {books?.map(book => (
+          <option key={book?.id} value={book?.id}>
+            {book?.title}
+          </option>
+        ))}
+      </select>
+
+      <input
+        placeholder="Chapter Name"
+        value={chapterTitle}
+        onChange={e => setChapterTitle(e?.target?.value)}
+      />
+
+      <button onClick={createChapter}>Create Chapter</button>
+
+     {selectedBook && (
+  <>
+    <h4>Chapters in Book of {selectedBook?.title}</h4>
+
+    {selectedBook?.chapters?.length === 0 ? (
+      <p style={{ color: '#888' }}>No chapters found in {selectedBook?.title}</p>
+    ) : (
+      selectedBook?.chapters?.map(ch => (
+        <button
+          key={ch?.id}
+          onClick={() => setSelectedChapterId(ch?.id)}
+          style={{ marginRight: '6px' }}
+        >
+          {ch?.title}
+        </button>
+      ))
+    )}
+  </>
+)}
+
+
+      {selectedChapter && (
+        <>
+          <PageForm chapter={selectedChapter} refresh={refresh} />
+          <PageList chapter={selectedChapter} />
+        </>
+      )}
+    </>
+  );
+}
+export default ChapterForm
