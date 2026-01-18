@@ -81,7 +81,7 @@ const  ChapterForm=({ books, refresh })=>{
       {selectedChapter && (
         <>
           <PageForm chapter={selectedChapter} refresh={refresh} />
-          <PageList chapter={selectedChapter} />
+          <PageList chapter={selectedChapter} refresh={refresh} />
         </>
       )}
     </>
