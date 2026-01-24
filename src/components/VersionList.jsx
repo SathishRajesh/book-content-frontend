@@ -7,7 +7,7 @@ export default function VersionList({ chapter }) {
       {chapter?.versions?.map((v, i) => (
         <div
           key={i}
-          style={{ border: '1px solid #ccc', margin: 6, padding: 6 }}
+          style={{ border: '1px solid #ccc',color:"black", margin: 6, padding: 6 }}
         >
           <b>Version:</b> {v?.version}<br />
           <b>Page:</b> {v?.pageId}<br />
